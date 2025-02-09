@@ -91,7 +91,7 @@ const errorRotateTransport = new winston.transports.DailyRotateFile({
 });
 
 // Logger instance
-const developmentLogger = winston.createLogger({
+const logger = winston.createLogger({
     level: 'debug',
     defaultMeta: { serviceName: 'own-service' },
     transports: [
@@ -108,4 +108,4 @@ const developmentLogger = winston.createLogger({
     ],
 });
 
-export default developmentLogger;
+export default logger;
