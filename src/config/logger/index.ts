@@ -65,7 +65,7 @@ if (!fs.existsSync(logDirectory)) {
 const colors: Record<string, string> = {
     error: '\x1b[31m', // Red
     warn: '\x1b[33m', // Yellow
-    info: '\x1b[34m', // Blue
+    info: '\x1b[32m', // Green
     debug: '\x1b[35m', // Magenta
     reset: '\x1b[0m', // Reset color
 };

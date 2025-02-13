@@ -18,7 +18,6 @@ const startServer = () => {
             // logger.error('server running', {
             //     serviceName: 'own-service',
             // });
-            console.log(`Listening on PORT ${PORT}`);
         });
     } catch (error) {
         console.error(error);
