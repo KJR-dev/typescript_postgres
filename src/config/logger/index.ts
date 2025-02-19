@@ -40,7 +40,6 @@ const deleteOldLogFolders = (daysToKeep: number): void => {
                             folder,
                         );
                         fs.rmSync(folderPath, { recursive: true, force: true });
-                        console.log(`Deleted old log folder: ${folderPath}`);
                     }
                 }
             });
@@ -58,7 +57,6 @@ const logDirectory: string = path.join(`logs/${Config.NODE_ENV}`, folderName);
 
 if (!fs.existsSync(logDirectory)) {
     fs.mkdirSync(logDirectory, { recursive: true });
-    console.log(`Created log directory: ${logDirectory}`);
 }
 
 // **Define Log Colors**

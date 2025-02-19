@@ -2,3 +2,6 @@
 build
 coverage
 eslint.config.mjs
+tscofig.json
+package.json
+package-lock.json

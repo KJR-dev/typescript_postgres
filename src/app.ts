@@ -3,7 +3,9 @@ import express, { NextFunction, Request, Response } from 'express';
 import logger from './config/logger';
 import { HttpError } from 'http-errors';
 import route from './routes';
+
 const app = express();
+app.use(express.json());
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 app.get('/', (_req: Request, res: Response, next: NextFunction) => {
