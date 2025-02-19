@@ -2,8 +2,9 @@ import request from 'supertest';
 import app from '../../src/app';
 import { DataSource } from 'typeorm';
 import { AppDataSource } from '../../src/config/data-source';
-import { truncateTables } from '../utils';
+// import { truncateTables } from '../utils';
 import { User } from '../../src/entity/User';
+import { Roles } from '../../src/constants';
 
 describe('post /auth/register', () => {
     describe('Happy Parts', () => {
@@ -12,7 +13,9 @@ describe('post /auth/register', () => {
             connection = await AppDataSource.initialize();
         });
         beforeEach(async () => {
-            await truncateTables(connection);
+            await connection.dropDatabase();
+            await connection.synchronize();
+            // await truncateTables(connection);
         });
         afterAll(async () => {
             await connection.destroy();
@@ -38,6 +41,7 @@ describe('post /auth/register', () => {
             expect(users[0].lastName).toBe(userData.lastName);
             expect(users[0].email).toBe(userData.email);
             expect(users[0].password).toBe(userData.password);
+            expect(users[0].role).toBe(Roles.CUSTOMER);
         });
     });
     // describe('Sad part', () => {});

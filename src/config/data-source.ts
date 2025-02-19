@@ -10,8 +10,9 @@ export const AppDataSource = new DataSource({
     username: Config.POSTGRESQL_USERNAME,
     password: Config.POSTGRESQL_PASSWORD,
     database: Config.POSTGRESQL_DATABASE,
-    synchronize:
-        Config.NODE_ENV === 'test' || Config.NODE_ENV === 'development',
+    // synchronize:
+    //     Config.NODE_ENV === 'test' || Config.NODE_ENV === 'development',
+    synchronize: false,
     logging: false,
     entities: [User],
     migrations: [],
