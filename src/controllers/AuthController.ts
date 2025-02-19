@@ -27,7 +27,7 @@ export class AuthController {
                 password,
             });
             this.logger.info('User has been registered', { id: user.id });
-            res.sendStatus(201).json();
+            res.status(201).json();
         } catch (err) {
             next(err);
             return;
