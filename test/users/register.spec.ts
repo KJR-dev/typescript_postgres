@@ -68,5 +68,26 @@ describe('post /auth/register', () => {
             expect(users).toHaveLength(1);
         });
     });
-    // describe('Sad part', () => {});
+    describe('Sad part', () => {
+        describe('Fields are missing', () => {
+            it('should return 400 status code if email field is missing', async () => {
+                //Arrenge
+                const userData = {
+                    firstName: 'Jitendra',
+                    lastName: 'Sahoo',
+                    email: '',
+                    password: '1234',
+                };
+
+                //Act
+                // eslint-disable-next-line @typescript-eslint/no-misused-promises
+                const response = await request(app)
+                    .post('/api/v1/web/auth/register')
+                    .send(userData);
+
+                //Assert
+                expect(response.statusCode).toBe(400);
+            });
+        });
+    });
 });
