@@ -1,28 +1,25 @@
 import app from './app';
 import { Config } from './config';
+import { AppDataSource } from './config/data-source';
 import logger from './config/logger';
 
-const startServer = () => {
+const startServer = async () => {
     const PORT = Config.PORT;
     try {
+        await AppDataSource.initialize();
         app.listen(PORT, () => {
-            // logger.debug('server running', {
-            //     serviceName: 'own-service',
-            //     data: {
-            //         name: 'jitendra sahoo',
-            //     },
-            // });
             logger.info(`Server listening at http://localhost:${Config.PORT}`, {
                 serviceName: 'own-service',
             });
-            // logger.error('server running', {
-            //     serviceName: 'own-service',
-            // });
         });
-    } catch (error) {
-        console.error(error);
-        process.exit(1);
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            logger.error(error.message);
+            setTimeout(() => {
+                process.exit(1);
+            }, 1000);
+        }
     }
 };
 
-startServer();
+void startServer();

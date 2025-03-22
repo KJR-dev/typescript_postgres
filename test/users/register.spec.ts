@@ -2,12 +2,13 @@ import request from 'supertest';
 import app from '../../src/app';
 import { DataSource } from 'typeorm';
 import { AppDataSource } from '../../src/config/data-source';
-// import { truncateTables } from '../utils';
 import { User } from '../../src/entity/User';
 import { Roles } from '../../src/constants';
+import { RefreshToken } from '../../src/entity/RefreshToken';
 
-describe('post /auth/register', () => {
-    let connection: DataSource;
+let connection: DataSource; // Declare it globally
+
+describe('POST /auth/register', () => {
     beforeAll(async () => {
         connection = await AppDataSource.initialize();
     });
@@ -20,9 +21,10 @@ describe('post /auth/register', () => {
     afterAll(async () => {
         await connection.destroy();
     });
+
     describe('Happy Parts', () => {
         it('Should return the 201 status code', async () => {
-            //Arrenge
+            // Arrange
             const userData = {
                 firstName: 'Jitendra',
                 lastName: 'Sahoo',
@@ -30,11 +32,11 @@ describe('post /auth/register', () => {
                 password: '1234',
             };
 
-            //Act
+            // Act
             // eslint-disable-next-line @typescript-eslint/no-misused-promises
             await request(app).post('/api/v1/web/auth/register').send(userData);
 
-            //Assert
+            // Assert
             const userRepository = connection.getRepository(User);
             const users = await userRepository.find();
             expect(users).toHaveLength(1);
@@ -44,8 +46,9 @@ describe('post /auth/register', () => {
             expect(users[0].password).toMatch(/^\$2b\$\d+\$/);
             expect(users[0].role).toBe(Roles.CUSTOMER);
         });
-        it('Should return the 400 status code if email is already exists', async () => {
-            //Arrenge
+
+        it('Should return a 400 status code if the email already exists', async () => {
+            // Arrange
             const userData = {
                 firstName: 'Jitendra',
                 lastName: 'Sahoo',
@@ -55,7 +58,7 @@ describe('post /auth/register', () => {
             const userRepository = connection.getRepository(User);
             await userRepository.save({ ...userData, role: Roles.CUSTOMER });
 
-            //Act
+            // Act
             // eslint-disable-next-line @typescript-eslint/no-misused-promises
             const response = await request(app)
                 .post('/api/v1/web/auth/register')
@@ -63,37 +66,13 @@ describe('post /auth/register', () => {
 
             const users = await userRepository.find();
 
-            //Assert
-
+            // Assert
             expect(response.statusCode).toBe(400);
             expect(users).toHaveLength(1);
         });
-    });
-    describe('Sad part', () => {
-        describe('Fields are missing', () => {
-            it('should return 400 status code if email field is missing', async () => {
-                //Arrenge
-                const userData = {
-                    firstName: 'Jitendra',
-                    lastName: 'Sahoo',
-                    email: '',
-                    password: '1234',
-                };
 
-                //Act
-                // eslint-disable-next-line @typescript-eslint/no-misused-promises
-                const response = await request(app)
-                    .post('/api/v1/web/auth/register')
-                    .send(userData);
-
-                //Assert
-                expect(response.statusCode).toBe(400);
-            });
-        });
-    });
-    describe('Sanitizing fields', () => {
-        it('should trim the email field', async () => {
-            //Arrenge
+        it('Should return access and refresh tokens inside a cookie part - 1', async () => {
+            // Arrange
             const userData = {
                 firstName: 'Jitendra',
                 lastName: 'Sahoo',
@@ -101,11 +80,102 @@ describe('post /auth/register', () => {
                 password: '1234',
             };
 
-            //Act
+            // Act
+            // eslint-disable-next-line @typescript-eslint/no-misused-promises
+            const response = await request(app)
+                .post('/api/v1/web/auth/register')
+                .send(userData);
+
+            let accessToken: string | null = null;
+            let refreshToken: string | null = null;
+
+            interface Headers {
+                ['set-cookie']: string[];
+            }
+            //Asser]
+            const cookies =
+                (response.headers as unknown as Headers)['set-cookie'] || [];
+            cookies.forEach((cookie) => {
+                if (cookie.startsWith('accessToken=')) {
+                    accessToken = cookie.split(';')[0].split('=')[1];
+                }
+                if (cookie.startsWith('refreshToken=')) {
+                    refreshToken = cookie.split(';')[0].split('=')[1];
+                }
+            });
+
+            // Assert
+            expect(accessToken).not.toBeNull();
+            expect(refreshToken).not.toBeNull();
+        });
+
+        it('Should return access and refresh tokens inside a cookie part - 2', async () => {
+            // Arrange
+            const userData = {
+                firstName: 'Jitendra',
+                lastName: 'Sahoo',
+                email: ' sahooj168@gmail.com ',
+                password: '1234',
+            };
+
+            // Act
+            // eslint-disable-next-line @typescript-eslint/no-misused-promises
+            const response = await request(app)
+                .post('/api/v1/web/auth/register')
+                .send(userData);
+
+            //Asser]
+            const refreshTokenRepository =
+                connection.getRepository(RefreshToken);
+            const token = await refreshTokenRepository
+                .createQueryBuilder('refreshToken')
+                .where('refreshToken.userId=:userId', {
+                    userId: (response.body as Record<string, string>).id,
+                })
+                .getMany();
+
+            expect(token).toHaveLength(1);
+        });
+    });
+
+    describe('Sad Parts', () => {
+        describe('Missing Fields', () => {
+            it('Should return a 400 status code if the email field is missing', async () => {
+                // Arrange
+                const userData = {
+                    firstName: 'Jitendra',
+                    lastName: 'Sahoo',
+                    email: '',
+                    password: '1234',
+                };
+
+                // Act
+                // eslint-disable-next-line @typescript-eslint/no-misused-promises
+                const response = await request(app)
+                    .post('/api/v1/web/auth/register')
+                    .send(userData);
+
+                // Assert
+                expect(response.statusCode).toBe(400);
+            });
+        });
+    });
+
+    describe('Sanitizing Fields', () => {
+        it('Should trim the email field', async () => {
+            // Arrange
+            const userData = {
+                firstName: 'Jitendra',
+                lastName: 'Sahoo',
+                email: ' sahooj168@gmail.com ',
+                password: '1234',
+            };
+
+            // Act
             // eslint-disable-next-line @typescript-eslint/no-misused-promises
             await request(app).post('/api/v1/web/auth/register').send(userData);
 
-            //Assert
+            // Assert
             const userRepository = connection.getRepository(User);
             const users = await userRepository.find();
             const user = users[0];
