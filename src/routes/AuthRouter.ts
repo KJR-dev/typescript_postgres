@@ -37,4 +37,8 @@ authRouter
         authController.login(req, res, next),
     );
 
+authRouter
+    .route('/self')
+    .post((req: Request, res: Response) => authController.self(req, res));
+
 export default authRouter;

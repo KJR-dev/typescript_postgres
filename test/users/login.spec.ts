@@ -45,7 +45,6 @@ describe('POST /auth/login', () => {
 
             expect(users).toHaveLength(1);
 
-            console.log(users[0].password);
             const credentialService = new CredentialService(); // Create an instance
             const result = await credentialService.comparePassword(
                 userData.password,
