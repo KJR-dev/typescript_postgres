@@ -32,11 +32,15 @@ describe('POST /auth/self', () => {
     describe('Happy Parts', () => {
         it('should return the 200 status code', async () => {
             //Arrenge
-
+            const accessToken = jwks.token({
+                sub: '1',
+                role: Roles.CUSTOMER,
+            });
             //Action
             // eslint-disable-next-line @typescript-eslint/no-misused-promises
             const response = await request(app)
                 .post('/api/v1/web/auth/self')
+                .set('Cookie', [`accessToken=${accessToken}`])
                 .send();
 
             //Asserts
@@ -62,11 +66,39 @@ describe('POST /auth/self', () => {
             });
             // eslint-disable-next-line @typescript-eslint/no-misused-promises
             const response = await request(app)
-                .get('/auth/self')
+                .post('/api/v1/web/auth/self')
                 .set('Cookie', [`accessToken=${accessToken}`])
                 .send();
 
             expect((response.body as Record<string, string>).id).toBe(data.id);
+        });
+
+        it('Should not return password field', async () => {
+            const userData = {
+                firstName: 'Jitendra',
+                lastName: 'sahoo',
+                email: 'sahooj168@gmail.com',
+                password: '1234',
+            };
+
+            const userRepository = connection.getRepository(User);
+            const data = await userRepository.save({
+                ...userData,
+                role: Roles.CUSTOMER,
+            });
+            const accessToken = jwks.token({
+                sub: String(data.id),
+                role: data.role,
+            });
+            // eslint-disable-next-line @typescript-eslint/no-misused-promises
+            const response = await request(app)
+                .post('/api/v1/web/auth/self')
+                .set('Cookie', [`accessToken=${accessToken}`])
+                .send();
+
+            expect(response.body as Record<string, string>).not.toHaveProperty(
+                'password',
+            );
         });
     });
 });

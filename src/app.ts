@@ -1,10 +1,12 @@
 import 'reflect-metadata';
 import express, { NextFunction, Request, Response } from 'express';
+import cookieParser from 'cookie-parser';
 import logger from './config/logger';
 import { HttpError } from 'http-errors';
 import route from './routes';
 
 const app = express();
+app.use(cookieParser());
 app.use(express.json());
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

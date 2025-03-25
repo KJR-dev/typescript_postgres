@@ -20,6 +20,8 @@ const {
 
     //Token
     REFRESH_TOKEN,
+
+    JWKS_URI,
 } = process.env;
 
 export const Config = {
@@ -36,4 +38,6 @@ export const Config = {
 
     //Token
     REFRESH_TOKEN,
+
+    JWKS_URI,
 };
