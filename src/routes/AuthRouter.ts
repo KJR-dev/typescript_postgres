@@ -41,7 +41,7 @@ authRouter
 
 authRouter
     .route('/self')
-    .post(authenticate, (req: Request, res: Response, next: NextFunction) =>
+    .get(authenticate, (req: Request, res: Response, next: NextFunction) =>
         authController.self(req as AuthRequest, res, next),
     );
 

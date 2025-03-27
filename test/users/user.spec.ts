@@ -11,7 +11,7 @@ describe('POST /auth/self', () => {
     let jwks: ReturnType<typeof createJWKSMock>;
 
     beforeAll(async () => {
-        jwks = createJWKSMock('http://localhost:5501');
+        jwks = createJWKSMock('http://localhost:3000');
         connection = await AppDataSource.initialize();
     });
 
@@ -39,7 +39,7 @@ describe('POST /auth/self', () => {
             //Action
             // eslint-disable-next-line @typescript-eslint/no-misused-promises
             const response = await request(app)
-                .post('/api/v1/web/auth/self')
+                .get('/api/v1/web/auth/self')
                 .set('Cookie', [`accessToken=${accessToken}`])
                 .send();
 
@@ -66,7 +66,7 @@ describe('POST /auth/self', () => {
             });
             // eslint-disable-next-line @typescript-eslint/no-misused-promises
             const response = await request(app)
-                .post('/api/v1/web/auth/self')
+                .get('/api/v1/web/auth/self')
                 .set('Cookie', [`accessToken=${accessToken}`])
                 .send();
 
@@ -92,13 +92,62 @@ describe('POST /auth/self', () => {
             });
             // eslint-disable-next-line @typescript-eslint/no-misused-promises
             const response = await request(app)
-                .post('/api/v1/web/auth/self')
+                .get('/api/v1/web/auth/self')
                 .set('Cookie', [`accessToken=${accessToken}`])
                 .send();
 
             expect(response.body as Record<string, string>).not.toHaveProperty(
                 'password',
             );
+        });
+
+        it('Should return 401 status code if token does not exists', async () => {
+            const userData = {
+                firstName: 'Jitendra',
+                lastName: 'sahoo',
+                email: 'sahooj168@gmail.com',
+                password: '1234',
+            };
+
+            const userRepository = connection.getRepository(User);
+            await userRepository.save({
+                ...userData,
+                role: Roles.CUSTOMER,
+            });
+
+            // eslint-disable-next-line @typescript-eslint/no-misused-promises
+            const response = await request(app)
+                .get('/api/v1/web/auth/self')
+                .send();
+
+            expect(response.statusCode).toBe(401);
+        });
+
+        it('Should return 200 status code if token is available', async () => {
+            const userData = {
+                firstName: 'Jitendra',
+                lastName: 'sahoo',
+                email: 'sahooj168@gmail.com',
+                password: '1234',
+            };
+
+            const userRepository = connection.getRepository(User);
+            await userRepository.save({
+                ...userData,
+                role: Roles.CUSTOMER,
+            });
+
+            const accessToken = jwks.token({
+                sub: '2',
+                role: Roles.CUSTOMER,
+            });
+            // eslint-disable-next-line @typescript-eslint/no-misused-promises
+            const response = await request(app)
+                .get('/api/v1/web/auth/self')
+                .set('Cookie', [`accessToken=${accessToken}`])
+                .send();
+
+            expect(response.statusCode).toBe(200);
         });
     });
 });

@@ -8,6 +8,7 @@ import route from './routes';
 const app = express();
 app.use(cookieParser());
 app.use(express.json());
+app.use(express.static('public'));
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 app.get('/', (_req: Request, res: Response, next: NextFunction) => {
@@ -18,8 +19,8 @@ app.use('/api', route);
 //Global error handler.
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 app.use((err: HttpError, _req: Request, res: Response, _next: NextFunction) => {
-    logger.error('err.message');
-    const statusCode = err.statusCode || 500;
+    logger.error(err.message);
+    const statusCode = err.statusCode || err.status || 500;
     res.status(statusCode).json({
         errors: [
             {
