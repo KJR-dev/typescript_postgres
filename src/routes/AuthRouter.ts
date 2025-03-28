@@ -12,6 +12,7 @@ import { CredentialService } from '../services/CredentialService';
 import authenticate from '../middlewares/authenticate';
 import { AuthRequest } from '../types';
 import validateRefreshToken from '../middlewares/validateRefreshToken';
+import parseRefreshToken from '../middlewares/parseRefreshToken';
 
 const authRouter = Router();
 
@@ -54,4 +55,12 @@ authRouter
             authController.refresh(req as AuthRequest, res, next),
     );
 
+authRouter
+    .route('/logout')
+    .post(
+        authenticate,
+        parseRefreshToken,
+        (req: Request, res: Response, next: NextFunction) =>
+            authController.logout(req as AuthRequest, res, next),
+    );
 export default authRouter;

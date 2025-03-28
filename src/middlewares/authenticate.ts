@@ -18,7 +18,6 @@ export default expressjwt({
                 return token;
             }
         }
-
         const { accessToken } = req.cookies as AuthCookie;
         return accessToken;
     },

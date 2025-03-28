@@ -205,9 +205,30 @@ export class AuthController {
 
             this.logger.info('User has been logged in', { id: user.id });
             res.json({ id: user.id });
+            return;
         } catch (err) {
             console.log(err);
             next(err);
+            return;
+        }
+    }
+
+    async logout(req: AuthRequest, res: Response, next: NextFunction) {
+        try {
+            await this.tokenService.deleteRefreshToken(Number(req.auth.id));
+            this.logger.info('Refresh token has been deleted', {
+                id: req.auth.id,
+            });
+            this.logger.info('User has been logout', {
+                id: req.auth.id,
+            });
+            res.clearCookie('accessToken');
+            res.clearCookie('refreshToken');
+            res.json({});
+        } catch (err) {
+            console.log(err);
+            next(err);
+            return;
         }
     }
 }
