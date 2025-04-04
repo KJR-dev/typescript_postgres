@@ -12,7 +12,9 @@
         "lint:fix": "eslint . --fix",
         "test": "cross-env NODE_ENV=test jest --watch --runInBand",
         "prepare": "husky",
-        "typeorm": "typeorm-ts-node-commonjs"
+        "migration:generate": "cross-env NODE_ENV=development typeorm-ts-node-commonjs migration:generate",
+        "migration:run":"cross-env NODE_ENV=development typeorm-ts-node-commonjs migration:run",
+        "migration:create":"cross-env NODE_ENV=development typeorm-ts-node-commonjs migration:create"
     },
     "author": "",
     "license": "ISC",
