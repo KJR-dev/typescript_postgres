@@ -94,5 +94,33 @@ describe('POST /tenants', () => {
 
             expect(tenants).toHaveLength(0);
         });
+
+        it('Should return 403 if user is not an admin', async () => {
+            //Arrenge
+            const managerToken = jwks.token({
+                sub: '1',
+                role: Roles.MANAGER,
+            });
+
+            const tenantData = {
+                name: 'Puri Store',
+                address: 'Puri, Odisha-752001',
+            };
+
+            //Action
+            // eslint-disable-next-line @typescript-eslint/no-misused-promises
+            const response = await request(app)
+                .post('/api/v1/web/tenants')
+                .set('Cookie', [`accessToken=${managerToken}`])
+                .send(tenantData);
+
+            const tenantsRepository = connection.getRepository(Tenant);
+            const tenants = await tenantsRepository.find();
+
+            //Asserts
+            expect(response.statusCode).toBe(403);
+
+            expect(tenants).toHaveLength(0);
+        });
     });
 });
