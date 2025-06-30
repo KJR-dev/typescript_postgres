@@ -119,7 +119,6 @@ describe('POST /tenants', () => {
 
             //Asserts
             expect(response.statusCode).toBe(403);
-
             expect(tenants).toHaveLength(0);
         });
     });
