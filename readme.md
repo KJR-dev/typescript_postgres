@@ -27,10 +27,10 @@ node scripts/convertPemToJwk.mjs
 
 ```json
 {
-  "kty": "RSA",
-  "use": "sig",
-  "n": "AJ0jRg4l...truncated",
-  "e": "AQAB"
+    "kty": "RSA",
+    "use": "sig",
+    "n": "AJ0jRg4l...truncated",
+    "e": "AQAB"
 }
 ```
 
@@ -38,14 +38,14 @@ Convert this into the following format:
 
 ```json
 {
-  "keys": [
-    {
-      "kty": "RSA",
-      "use": "sig",
-      "n": "AJ0jRg4l...truncated",
-      "e": "AQAB"
-    }
-  ]
+    "keys": [
+        {
+            "kty": "RSA",
+            "use": "sig",
+            "n": "AJ0jRg4l...truncated",
+            "e": "AQAB"
+        }
+    ]
 }
 ```
 
@@ -68,14 +68,14 @@ Example content of `jwks.json`:
 
 ```json
 {
-  "keys": [
-    {
-      "kty": "RSA",
-      "use": "sig",
-      "n": "AJ0jRg4l...truncated",
-      "e": "AQAB"
-    }
-  ]
+    "keys": [
+        {
+            "kty": "RSA",
+            "use": "sig",
+            "n": "AJ0jRg4l...truncated",
+            "e": "AQAB"
+        }
+    ]
 }
 ```
 
