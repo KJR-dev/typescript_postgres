@@ -86,7 +86,7 @@ Example content of `jwks.json`:
 💻📦🚀 Execute the following command in the terminal to apply pending migrations: 💻📦🚀
 
 ```bash
-npm run migration:run
+npm run migration:run -- -d src/config/data-source.ts
 ```
 
 ---
@@ -108,9 +108,9 @@ npm run migration:run
 ```bash
 npm run migration:create -- src/migration/your_migration_name
 
-npm run migration:generate -- src/migration/your_migration_name
+npm run migration:generate -- src/migration/add_deletedAt_in_tenants_table -d src/config/data-source.ts
 
-npm run migration:run
+npm run migration:run -- -d src/config/data-source.ts
 
-npm run migration:revert
+npm run migration:revert -- -d src/config/data-source.ts
 ```

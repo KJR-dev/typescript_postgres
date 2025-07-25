@@ -6,7 +6,7 @@ import { Tenant } from '../../src/entity/Tenant';
 import createJWKSMock from 'mock-jwks';
 import { Roles } from '../../src/constants';
 
-describe('POST /tenants', () => {
+describe('PATCH /tenants', () => {
     let connection: DataSource;
     let jwks: ReturnType<typeof createJWKSMock>;
     let adminToken: string;
@@ -32,25 +32,7 @@ describe('POST /tenants', () => {
     });
     describe('Happy parts', () => {
         describe('Given all field', () => {
-            it('Should return a 201 status code', async () => {
-                //Arrenge
-                const tenantData = {
-                    name: 'Puri Store',
-                    address: 'Puri, Odisha-752001',
-                };
-
-                //Action
-                // eslint-disable-next-line @typescript-eslint/no-misused-promises
-                const response = await request(app)
-                    .post('/api/v1/web/tenants')
-                    .set('Cookie', [`accessToken=${adminToken}`])
-                    .send(tenantData);
-
-                //Asserts
-                expect(response.statusCode).toBe(201);
-            });
-
-            it('Should create a tenant in the Database', async () => {
+            it('Should return a 201 status code of address update', async () => {
                 //Arrenge
                 const tenantData = {
                     name: 'Puri Store',
@@ -64,13 +46,22 @@ describe('POST /tenants', () => {
                     .set('Cookie', [`accessToken=${adminToken}`])
                     .send(tenantData);
 
+                //Arrenge
                 const tenantsRepository = connection.getRepository(Tenant);
                 const tenant = await tenantsRepository.find();
+                const updateTenantData = {
+                    address: 'Puri, Odisha-752001',
+                };
+
+                //Action
+                // eslint-disable-next-line @typescript-eslint/no-misused-promises
+                const responseUpdateData = await request(app)
+                    .put(`/api/v1/web/tenants/${tenant[0].id}`)
+                    .set('Cookie', [`accessToken=${adminToken}`])
+                    .send(updateTenantData);
 
                 //Asserts
-                expect(tenant).toHaveLength(1);
-                expect(tenant[0].name).toBe(tenantData.name);
-                expect(tenant[0].address).toBe(tenantData.address);
+                expect(responseUpdateData.statusCode).toBe(204);
             });
 
             it('Should return 401 if user is not authenticated', async () => {
@@ -157,7 +148,7 @@ describe('POST /tenants', () => {
                 });
 
                 const tenantData = {
-                    name: '  ',
+                    name: ' ',
                     address: 'Puri, Odisha-752001',
                 };
 
