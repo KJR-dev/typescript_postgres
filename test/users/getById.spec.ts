@@ -76,7 +76,7 @@ describe('GET /user/:id', () => {
                 const user = await request(app)
                     .get(`/api/v1/web/user/${id}`)
                     .set('Cookie', [`accessToken=${adminToken}`])
-                    .send(userData);
+                    .send();
 
                 //Asserts
                 expect(user.statusCode).toBe(200);

@@ -30,9 +30,10 @@ export class UserController {
     }
 
     async getAll(req: Request, res: Response, next: NextFunction) {
-        // this.logger.debug('Incoming user data for create', req.body);
+        this.logger.debug('Incoming user data for create', req.body);
         try {
-            const user = await this.userService.getAll();
+            const { role = '' } = req.query as { role: string };
+            const user = await this.userService.getAll(role);
             res.status(201).json(user);
         } catch (error) {
             next(error);

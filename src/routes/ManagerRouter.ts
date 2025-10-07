@@ -1,11 +1,14 @@
-import { NextFunction, Response, Router } from 'express';
+import { NextFunction, Request, Response, Router } from 'express';
 import { canAccess } from '../middlewares/canAccess';
 import { Roles } from '../constants';
 import authenticate from '../middlewares/authenticate';
 // import { createQueryUserSchema } from "../validators/user-validator";
 // import { validateRequest } from "../middlewares/validateRequest";
 import { sanitizeXSSMiddleware } from '../middlewares/sanitizeXSS';
-import { createManagerSchema } from '../validators/manager-validator';
+import {
+    createManagerSchema,
+    getAllManagerSchema,
+} from '../validators/manager-validator';
 import { validateRequest } from '../middlewares/validateRequest';
 import { CreateUserRequest } from '../types/user';
 import { AppDataSource } from '../config/data-source';
@@ -29,6 +32,14 @@ managerRouter
         validateRequest(createManagerSchema, 'body'),
         async (req: CreateUserRequest, res: Response, next: NextFunction) => {
             await userController.create(req, res, next);
+        },
+    )
+    .get(
+        authenticate,
+        canAccess([Roles.ADMIN]),
+        validateRequest(getAllManagerSchema, 'query'),
+        async (req: Request, res: Response, next: NextFunction) => {
+            await userController.getAll(req, res, next);
         },
     );
 

@@ -1,5 +1,6 @@
 import Joi from 'joi';
 import { Roles } from '../constants';
+import { GetAllManagerQuery } from '../types/manager';
 
 export const createManagerSchema = Joi.object({
     firstName: Joi.string()
@@ -50,4 +51,10 @@ export const createManagerSchema = Joi.object({
         'number.positive': 'Tenant ID must be a positive number.',
         'any.required': 'Tenant ID is required.',
     }),
+});
+
+export const getAllManagerSchema = Joi.object<GetAllManagerQuery>({
+    role: Joi.string()
+        .valid(Roles.ADMIN, Roles.MANAGER, Roles.CUSTOMER)
+        .required(),
 });

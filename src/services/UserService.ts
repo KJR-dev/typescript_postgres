@@ -1,4 +1,4 @@
-import { Repository } from 'typeorm';
+import { FindOptionsWhere, Repository } from 'typeorm';
 import { User } from '../entity/User';
 import { UserData } from '../types/auth';
 import createHttpError from 'http-errors';
@@ -50,8 +50,11 @@ export class UserService {
         });
     }
 
-    async getAll() {
-        return await this.userRepository.find();
+    async getAll(role?: string): Promise<User[]> {
+        const where: FindOptionsWhere<User> | undefined = role
+            ? { role }
+            : undefined;
+        return await this.userRepository.find({ where });
     }
 
     async findById(id: number) {
