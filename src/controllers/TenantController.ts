@@ -51,14 +51,6 @@ export class TenantController {
         const { id } = req.params;
         this.logger.debug('Request for fetch a tenant', req.params);
         try {
-            const result = validationResult(req);
-            if (!result.isEmpty()) {
-                this.logger.error('Tenant not created', {
-                    errors: result.array(),
-                });
-                res.status(400).json({ errors: result.array() });
-                return;
-            }
             const tenantData = await this.tenantService.getById(Number(id));
             this.logger.info(
                 'Tenant Data has been fetch successfully',
@@ -75,14 +67,6 @@ export class TenantController {
         const { id } = req.params;
         this.logger.debug('Request for delete a tenant', req.params);
         try {
-            const result = validationResult(req);
-            if (!result.isEmpty()) {
-                this.logger.error('Tenant not created', {
-                    errors: result.array(),
-                });
-                res.status(400).json({ errors: result.array() });
-                return;
-            }
             const tenantData = await this.tenantService.deleteById(Number(id));
             this.logger.info(
                 'Tenant Data has been fetch successfully',
@@ -104,14 +88,6 @@ export class TenantController {
         const { name, address } = req.body;
         this.logger.debug('Request to update a tenant', { id, name, address });
         try {
-            const result = validationResult(req);
-            if (!result.isEmpty()) {
-                this.logger.error('Tenant not created', {
-                    errors: result.array(),
-                });
-                res.status(400).json({ errors: result.array() });
-                return;
-            }
             const updateResult = await this.tenantService.updateById(
                 id,
                 name,

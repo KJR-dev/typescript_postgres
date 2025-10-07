@@ -9,7 +9,7 @@ import { canAccess } from '../middlewares/canAccess';
 import { Roles } from '../constants';
 import {
     createSchema,
-    getByIdSchema,
+    getAndDeleteByIdSchema,
     updateByIdSchema,
 } from '../validators/tenant-validator';
 import {
@@ -17,6 +17,8 @@ import {
     IdTenantRequest,
     UpdateTenantRequest,
 } from '../types/tenantType';
+import { validateRequest } from '../middlewares/validateRequest';
+import { sanitizeXSSMiddleware } from '../middlewares/sanitizeXSS';
 
 const tenantRouter = express.Router();
 
@@ -29,7 +31,8 @@ tenantRouter
     .post(
         authenticate,
         canAccess([Roles.ADMIN]),
-        createSchema,
+        sanitizeXSSMiddleware,
+        validateRequest(createSchema, 'body'),
         async (req: CreateTenantRequest, res: Response, next: NextFunction) => {
             await tenantController.create(req, res, next);
         },
@@ -46,7 +49,8 @@ tenantRouter
     .get(
         authenticate,
         canAccess([Roles.ADMIN]),
-        getByIdSchema,
+        sanitizeXSSMiddleware,
+        validateRequest(getAndDeleteByIdSchema, 'params'),
         async (req: IdTenantRequest, res: Response, next: NextFunction) => {
             await tenantController.getById(req, res, next);
         },
@@ -54,6 +58,8 @@ tenantRouter
     .delete(
         authenticate,
         canAccess([Roles.ADMIN]),
+        sanitizeXSSMiddleware,
+        validateRequest(getAndDeleteByIdSchema, 'params'),
         async (req: IdTenantRequest, res: Response, next: NextFunction) => {
             await tenantController.deleteById(req, res, next);
         },
@@ -61,7 +67,9 @@ tenantRouter
     .put(
         authenticate,
         canAccess([Roles.ADMIN]),
-        updateByIdSchema,
+        sanitizeXSSMiddleware,
+        validateRequest(getAndDeleteByIdSchema, 'params'),
+        validateRequest(updateByIdSchema, 'body'),
         async (req: UpdateTenantRequest, res: Response, next: NextFunction) => {
             await tenantController.updateById(req, res, next);
         },

@@ -4,15 +4,17 @@ import { UserService } from '../services/UserService';
 import { AppDataSource } from '../config/data-source';
 import { User } from '../entity/User';
 import logger from '../config/logger';
-import registerValidator from '../validators/register-validator';
+import { registerSchema } from '../validators/register-validator';
 import { RefreshToken } from '../entity/RefreshToken';
 import { TokenService } from '../services/TokenService';
-import loginValidator from '../validators/login-validator';
+import { authSchema } from '../validators/login-validator';
 import { CredentialService } from '../services/CredentialService';
 import authenticate from '../middlewares/authenticate';
-import { AuthRequest } from '../types';
+import { AuthRequest } from '../types/auth';
 import validateRefreshToken from '../middlewares/validateRefreshToken';
 import parseRefreshToken from '../middlewares/parseRefreshToken';
+import { sanitizeXSSMiddleware } from '../middlewares/sanitizeXSS';
+import { validateRequest } from '../middlewares/validateRequest';
 
 const authRouter = Router();
 
@@ -31,14 +33,18 @@ const authController = new AuthController(
 authRouter
     .route('/register')
     .post(
-        registerValidator,
+        sanitizeXSSMiddleware,
+        validateRequest(registerSchema, 'body'),
         (req: Request, res: Response, next: NextFunction) =>
             authController.register(req, res, next),
     );
 authRouter
     .route('/login')
-    .post(loginValidator, (req: Request, res: Response, next: NextFunction) =>
-        authController.login(req, res, next),
+    .post(
+        sanitizeXSSMiddleware,
+        validateRequest(authSchema, 'body'),
+        (req: Request, res: Response, next: NextFunction) =>
+            authController.login(req, res, next),
     );
 
 authRouter

@@ -4,11 +4,13 @@ import cookieParser from 'cookie-parser';
 import logger from './config/logger';
 import { HttpError } from 'http-errors';
 import route from './routes';
+import helmet from 'helmet';
 
 const app = express();
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.static('public'));
+app.use(helmet());
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 app.get('/', (_req: Request, res: Response, next: NextFunction) => {

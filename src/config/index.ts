@@ -22,6 +22,8 @@ const {
     REFRESH_TOKEN,
 
     JWKS_URI,
+
+    MONGO_URI,
 } = process.env;
 
 export const Config = {
@@ -40,4 +42,7 @@ export const Config = {
     REFRESH_TOKEN,
 
     JWKS_URI,
+
+    //MongoDB
+    MONGO_URI,
 };

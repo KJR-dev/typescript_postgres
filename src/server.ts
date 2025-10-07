@@ -9,12 +9,12 @@ const startServer = async () => {
         await AppDataSource.initialize();
         app.listen(PORT, () => {
             logger.info(`Server listening at http://localhost:${Config.PORT}`, {
-                serviceName: 'own-service',
+                serviceName: 'Auth-Service',
             });
         });
     } catch (error: unknown) {
         if (error instanceof Error) {
-            logger.error(error.message);
+            logger.error(error);
             setTimeout(() => {
                 process.exit(1);
             }, 1000);

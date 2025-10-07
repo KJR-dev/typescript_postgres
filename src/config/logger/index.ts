@@ -1,5 +1,6 @@
 import winston from 'winston';
 import 'winston-daily-rotate-file';
+import 'winston-mongodb';
 import { Config } from '..';
 import fs from 'fs';
 import path from 'path';
@@ -127,7 +128,7 @@ const dailyRotateTransport = new winston.transports.DailyRotateFile({
     maxFiles: `${days}+d`,
     level: 'debug',
     format: fileLogFormat,
-    silent: Config.NODE_ENV === 'test',
+    // silent: Config.NODE_ENV === 'test',
 });
 
 const errorRotateTransport = new winston.transports.DailyRotateFile({
@@ -136,16 +137,34 @@ const errorRotateTransport = new winston.transports.DailyRotateFile({
     datePattern: 'DD-MM-YYYY',
     level: 'error',
     format: fileLogFormat,
-    silent: Config.NODE_ENV === 'test',
+    // silent: Config.NODE_ENV === 'test',
+});
+
+const mongoDBTransport = new winston.transports.MongoDB({
+    level: 'info',
+    db: Config.MONGO_URI || 'mongodb://localhost:27017/logs_db',
+    collection: 'log_entries',
+    tryReconnect: true,
+    format: winston.format.combine(
+        winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+        winston.format.json(),
+    ),
+    storeHost: true,
+    metaKey: 'meta',
+    expireAfterSeconds: 3600 * 24 * 30,
+    // capped: true, // Optional: limits collection size 512mb
+    // cappedSize: 10 * 1024 * 1024, // 10MB
+    // silent: Config.NODE_ENV === 'test',
 });
 
 // **Logger Instance**
 const logger = winston.createLogger({
     level: 'debug',
-    defaultMeta: { serviceName: 'own-service' },
+    defaultMeta: { serviceName: 'Auth-Service' },
     transports: [
         dailyRotateTransport,
         errorRotateTransport,
+        mongoDBTransport, // ✅ Include MongoDB transport
         new winston.transports.Console({
             level: 'debug',
             format: winston.format.combine(

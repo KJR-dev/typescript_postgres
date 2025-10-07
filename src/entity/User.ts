@@ -1,4 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import {
+    Entity,
+    PrimaryGeneratedColumn,
+    Column,
+    ManyToOne,
+    DeleteDateColumn,
+} from 'typeorm';
 import { Tenant } from './Tenant';
 
 @Entity({ name: 'users' })
@@ -15,7 +21,7 @@ export class User {
     @Column({ unique: true })
     email: string;
 
-    @Column()
+    @Column({ select: false })
     password: string;
 
     @Column()
@@ -23,4 +29,7 @@ export class User {
 
     @ManyToOne(() => Tenant)
     tenant: Tenant;
+
+    @DeleteDateColumn()
+    deletedAt: Date;
 }

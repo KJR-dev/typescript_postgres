@@ -48,7 +48,6 @@ describe('DELETE /tenants/:id', () => {
                 //Arrenge
                 const tenantsRepository = connection.getRepository(Tenant);
                 const tenant = await tenantsRepository.find();
-
                 //Action
                 // eslint-disable-next-line @typescript-eslint/no-misused-promises
                 const response = await request(app)

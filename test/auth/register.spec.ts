@@ -29,7 +29,8 @@ describe('POST /auth/register', () => {
                 firstName: 'Jitendra',
                 lastName: 'Sahoo',
                 email: 'sahooj168@gmail.com',
-                password: '1234',
+                password: 'Jitu@135050',
+                role: 'admin',
             };
 
             // Act
@@ -38,13 +39,17 @@ describe('POST /auth/register', () => {
 
             // Assert
             const userRepository = connection.getRepository(User);
-            const users = await userRepository.find();
+            const users = await userRepository
+                .createQueryBuilder('user')
+                .addSelect('user.password')
+                .getMany();
+
             expect(users).toHaveLength(1);
             expect(users[0].firstName).toBe(userData.firstName);
             expect(users[0].lastName).toBe(userData.lastName);
             expect(users[0].email).toBe(userData.email);
             expect(users[0].password).toMatch(/^\$2b\$\d+\$/);
-            expect(users[0].role).toBe(Roles.CUSTOMER);
+            expect(users[0].role).toBe(Roles.ADMIN);
         });
 
         it('Should return a 400 status code if the email already exists', async () => {
@@ -76,8 +81,9 @@ describe('POST /auth/register', () => {
             const userData = {
                 firstName: 'Jitendra',
                 lastName: 'Sahoo',
-                email: ' sahooj168@gmail.com ',
-                password: '1234',
+                email: 'sahooj168@gmail.com',
+                password: 'Jitu@1234',
+                role: 'admin',
             };
 
             // Act
@@ -85,7 +91,6 @@ describe('POST /auth/register', () => {
             const response = await request(app)
                 .post('/api/v1/web/auth/register')
                 .send(userData);
-
             let accessToken: string | null = null;
             let refreshToken: string | null = null;
 
@@ -114,8 +119,9 @@ describe('POST /auth/register', () => {
             const userData = {
                 firstName: 'Jitendra',
                 lastName: 'Sahoo',
-                email: ' sahooj168@gmail.com ',
-                password: '1234',
+                email: 'sahooj168@gmail.com',
+                password: 'Jitu@1234',
+                role: 'admin',
             };
 
             // Act
@@ -168,7 +174,8 @@ describe('POST /auth/register', () => {
                 firstName: 'Jitendra',
                 lastName: 'Sahoo',
                 email: ' sahooj168@gmail.com ',
-                password: '1234',
+                password: 'Jitu@1234',
+                role: 'admin',
             };
 
             // Act

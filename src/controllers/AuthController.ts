@@ -1,8 +1,7 @@
 import { NextFunction, Response } from 'express';
-import { AuthRequest, RegisterUserRequest } from '../types';
+import { AuthRequest, RegisterUserRequest } from '../types/auth';
 import { UserService } from '../services/UserService';
 import { Logger } from 'winston';
-import { validationResult } from 'express-validator';
 import { JwtPayload } from 'jsonwebtoken';
 import { TokenService } from '../services/TokenService';
 import createHttpError from 'http-errors';
@@ -20,26 +19,21 @@ export class AuthController {
         res: Response,
         next: NextFunction,
     ) {
-        const { firstName, lastName, email, password, role } = req.body;
+        const { firstName, lastName, email, password, role, tenantId } =
+            req.body;
         this.logger.debug('New request to register a user', {
             firstName,
             lastName,
             email,
         });
         try {
-            //validation
-            const result = validationResult(req);
-            if (!result.isEmpty()) {
-                res.status(400).json({ errors: result.array() });
-                return;
-            }
-
             const user = await this.userService.create({
                 firstName,
                 lastName,
                 email,
                 password,
                 role,
+                tenantId,
             });
 
             this.logger.info('User has been registered', { id: user.id });
@@ -87,13 +81,6 @@ export class AuthController {
         });
 
         try {
-            //validation
-            const result = validationResult(req);
-            if (!result.isEmpty()) {
-                res.status(400).json({ error: result.array() });
-                return;
-            }
-
             const user = await this.userService.findByEmail(email);
             if (!user) {
                 const error = createHttpError(

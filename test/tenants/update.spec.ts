@@ -50,6 +50,7 @@ describe('PATCH /tenants', () => {
                 const tenantsRepository = connection.getRepository(Tenant);
                 const tenant = await tenantsRepository.find();
                 const updateTenantData = {
+                    name: 'Puri Store',
                     address: 'Puri, Odisha-752001',
                 };
 

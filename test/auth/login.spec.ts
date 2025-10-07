@@ -28,7 +28,8 @@ describe('POST /auth/login', () => {
                 firstName: 'Jitendra',
                 lastName: 'Sahoo',
                 email: 'sahooj168@gmail.com',
-                password: '1234',
+                password: 'Jitu@1234',
+                role: 'admin',
             };
 
             //Action
@@ -37,18 +38,18 @@ describe('POST /auth/login', () => {
 
             //Asserts
             const userRepository = connection.getRepository(User);
-            const users = await userRepository.find({
-                where: {
-                    email: userData.email,
-                },
-            });
+            const user = await userRepository
+                .createQueryBuilder('user')
+                .addSelect('user.password') // explicitly include password
+                .where('user.email = :email', { email: userData.email })
+                .getOne();
 
-            expect(users).toHaveLength(1);
+            expect(user).not.toBeNull(); // user exists
 
             const credentialService = new CredentialService(); // Create an instance
             const result = await credentialService.comparePassword(
                 userData.password,
-                users[0].password,
+                user!.password,
             );
 
             expect(result).toBe(true);
