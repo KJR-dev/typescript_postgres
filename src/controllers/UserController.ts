@@ -42,7 +42,7 @@ export class UserController {
     }
 
     async getById(req: getByIdUserRequest, res: Response, next: NextFunction) {
-        // this.logger.debug('Incoming user data for create', req.body);
+        this.logger.debug('Incoming user data for create', req.body);
         const id = Number(req.params.id);
         try {
             const user = await this.userService.findById(id);

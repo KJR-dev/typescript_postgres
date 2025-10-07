@@ -8,6 +8,7 @@ import { sanitizeXSSMiddleware } from '../middlewares/sanitizeXSS';
 import {
     createManagerSchema,
     getAllManagerSchema,
+    getByIdManagerSchema,
 } from '../validators/manager-validator';
 import { validateRequest } from '../middlewares/validateRequest';
 import { CreateUserRequest } from '../types/user';
@@ -40,6 +41,27 @@ managerRouter
         validateRequest(getAllManagerSchema, 'query'),
         async (req: Request, res: Response, next: NextFunction) => {
             await userController.getAll(req, res, next);
+        },
+    );
+
+managerRouter
+    .route('/:id')
+    .get(
+        sanitizeXSSMiddleware,
+        authenticate,
+        canAccess([Roles.ADMIN]),
+        validateRequest(getByIdManagerSchema, 'params'),
+        async (req: Request, res: Response, next: NextFunction) => {
+            await userController.getById(req, res, next);
+        },
+    )
+    .delete(
+        sanitizeXSSMiddleware,
+        authenticate,
+        canAccess([Roles.ADMIN]),
+        validateRequest(getByIdManagerSchema, 'params'),
+        async (req: Request, res: Response, next: NextFunction) => {
+            await userController.deleteById(req, res, next);
         },
     );
 
