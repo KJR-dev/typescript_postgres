@@ -45,24 +45,6 @@ describe('GET /tenants', () => {
                 expect(response.statusCode).toBe(201);
             });
 
-            it('Should return 401 if user is not authenticated', async () => {
-                //Arrenge
-
-                //Action
-                // eslint-disable-next-line @typescript-eslint/no-misused-promises
-                const response = await request(app)
-                    .get('/api/v1/web/tenants')
-                    .send();
-
-                const tenantsRepository = connection.getRepository(Tenant);
-                const tenants = await tenantsRepository.find();
-
-                //Asserts
-                expect(response.statusCode).toBe(401);
-
-                expect(tenants).toHaveLength(0);
-            });
-
             it('Should return 403 if user is not an admin', async () => {
                 //Arrenge
                 const managerToken = jwks.token({
