@@ -20,3 +20,15 @@ export interface CreateUserRequest extends Request {
 export interface getByIdUserRequest extends Request {
     body: UserId;
 }
+
+export interface UserUpadateData {
+    firstName: string;
+    lastName: string;
+    email: string;
+    role: string;
+    tenantId: number;
+}
+
+export interface UpadateUserRequest extends Request {
+    body: UserUpadateData;
+}

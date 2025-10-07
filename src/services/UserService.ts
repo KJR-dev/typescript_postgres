@@ -4,6 +4,8 @@ import { UserData } from '../types/auth';
 import createHttpError from 'http-errors';
 import { Roles } from '../constants';
 import bcrypt from 'bcrypt';
+import { UserUpadateData } from '../types/user';
+import { Tenant } from '../entity/Tenant';
 
 export class UserService {
     constructor(private userRepository: Repository<User>) {}
@@ -31,7 +33,7 @@ export class UserService {
             email,
             password: hashedPassword,
             role: role ?? Roles.CUSTOMER,
-            tenantId: tenantId ? { id: tenantId } : undefined,
+            tenant: tenantId ? { id: tenantId } : undefined,
         });
         return user;
     }
@@ -54,16 +56,40 @@ export class UserService {
         const where: FindOptionsWhere<User> | undefined = role
             ? { role }
             : undefined;
-        return await this.userRepository.find({ where });
+        return await this.userRepository.find({
+            where,
+            relations: ['tenant'],
+        });
     }
 
     async findById(id: number) {
         return await this.userRepository.findOne({
             where: { id },
+            relations: ['tenant'],
         });
     }
 
     async deleteById(id: number) {
         return await this.userRepository.softDelete({ id });
+    }
+
+    async updateById(id: number, data: UserUpadateData) {
+        const managerUpdate = await this.userRepository.findOne({
+            where: { id },
+            relations: ['tenant'],
+        });
+
+        if (!managerUpdate) {
+            throw new Error(`User with ID ${id} not found`);
+        }
+
+        managerUpdate.firstName = data.firstName;
+        managerUpdate.lastName = data.lastName;
+        managerUpdate.email = data.email;
+        managerUpdate.role = data.role;
+        managerUpdate.tenant = { id: data.tenantId } as Tenant;
+
+        await this.userRepository.save(managerUpdate);
+        return managerUpdate;
     }
 }

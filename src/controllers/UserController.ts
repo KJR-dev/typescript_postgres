@@ -52,6 +52,7 @@ export class UserController {
             return;
         }
     }
+
     async deleteById(
         req: getByIdUserRequest,
         res: Response,
@@ -61,6 +62,22 @@ export class UserController {
         const id = Number(req.params.id);
         try {
             const user = await this.userService.deleteById(id);
+            res.status(204).json(user);
+        } catch (error) {
+            next(error);
+            return;
+        }
+    }
+
+    async updateById(
+        req: CreateUserRequest,
+        res: Response,
+        next: NextFunction,
+    ) {
+        const managerData = req.body;
+        const id = Number(req.params.id);
+        try {
+            const user = await this.userService.updateById(id, managerData);
             res.status(204).json(user);
         } catch (error) {
             next(error);

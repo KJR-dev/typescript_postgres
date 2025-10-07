@@ -62,3 +62,40 @@ export const getAllManagerSchema = Joi.object<GetAllManagerQuery>({
 export const getByIdManagerSchema = Joi.object<GetByIdManagerParams>({
     id: Joi.number().integer().positive().min(1).required(),
 });
+
+export const updateManagerSchema = Joi.object({
+    firstName: Joi.string()
+        .trim()
+        .pattern(/^[A-Za-z]+$/)
+        .required()
+        .messages({
+            'string.empty': 'First name is required and cannot be empty.',
+            'string.pattern.base': 'First name must contain only letters.',
+        }),
+
+    lastName: Joi.string()
+        .trim()
+        .pattern(/^[A-Za-z]+$/)
+        .required()
+        .messages({
+            'string.empty': 'Last name is required and cannot be empty.',
+            'string.pattern.base': 'Last name must contain only letters.',
+        }),
+
+    email: Joi.string().trim().email().required().messages({
+        'string.empty': 'Email is required and cannot be empty.',
+        'string.email': 'Email must be a valid email address.',
+    }),
+
+    role: Joi.string().trim().valid(Roles.MANAGER).required().messages({
+        'string.base': 'Role must be a string.',
+        'any.only': 'Role must be: manager',
+        'string.empty': 'Role is required and cannot be empty.',
+    }),
+    tenantId: Joi.number().integer().positive().required().messages({
+        'number.base': 'Tenant ID must be a number.',
+        'number.integer': 'Tenant ID must be an integer.',
+        'number.positive': 'Tenant ID must be a positive number.',
+        'any.required': 'Tenant ID is required.',
+    }),
+});

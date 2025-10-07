@@ -6,7 +6,7 @@ import request from 'supertest';
 import { Roles } from '../../src/constants';
 import { User } from '../../src/entity/User';
 
-describe('GET /manager/:id', () => {
+describe('PUT /manager/:id', () => {
     let connection: DataSource;
     let jwks: ReturnType<typeof createJWKSMock>;
     let adminToken: string;
@@ -33,14 +33,32 @@ describe('GET /manager/:id', () => {
 
     describe('Happy Parts', () => {
         it('should return the 201 status code', async () => {
+            // Arrenge
+            const tenantData = {
+                name: 'Puri Store',
+                address: 'Puri, Odisha-752001',
+            };
+
+            //Action
+            // eslint-disable-next-line @typescript-eslint/no-misused-promises
+            const tenantResponse = await request(app)
+                .post('/api/v1/web/tenants')
+                .set('Cookie', [`accessToken=${adminToken}`])
+                .send(tenantData);
+
+            //Asserts
+            expect(tenantResponse.statusCode).toBe(201);
+
             //Arrenge
+            const { id: tenantId } = tenantResponse.body as { id: number };
+
             const userData = {
                 firstName: 'Jitendra',
                 lastName: 'Sahoo',
                 email: 'saho6oj168@gmail.com',
                 password: 'Jitu@135050',
                 role: 'manager',
-                tenantId: 1,
+                tenantId: tenantId,
             };
 
             //Action
@@ -55,6 +73,7 @@ describe('GET /manager/:id', () => {
                 where: {
                     role: 'manager',
                 },
+                relations: ['tenant'],
             });
 
             //Asserts
@@ -64,13 +83,39 @@ describe('GET /manager/:id', () => {
 
         it('should return the 200 status code', async () => {
             //Arrenge
+            const tenantData = {
+                name: 'Puri Store',
+                address: 'Puri, Odisha-752001',
+            };
+
+            //Action
+            // eslint-disable-next-line @typescript-eslint/no-misused-promises
+            const tenantResponse = await request(app)
+                .post('/api/v1/web/tenants')
+                .set('Cookie', [`accessToken=${adminToken}`])
+                .send(tenantData);
+
+            //Asserts
+            expect(tenantResponse.statusCode).toBe(201);
+
+            //Arrenge
+            const { id: tenantId } = tenantResponse.body as { id: number };
+
             const managerData = {
                 firstName: 'Jitendra',
                 lastName: 'Sahoo',
                 email: 'saho6oj168@gmail.com',
                 password: 'Jitu@135050',
                 role: 'manager',
-                tenantId: 1,
+                tenantId: tenantId,
+            };
+            const managerData2 = {
+                firstName: 'Jitcccccccendra',
+                lastName: 'Sahcccccccoo',
+                email: 'sahocccccc6oj168@gmail.com',
+                password: 'Jitu@135050',
+                role: 'manager',
+                tenantId: tenantId,
             };
 
             //Action
@@ -84,22 +129,40 @@ describe('GET /manager/:id', () => {
 
             // eslint-disable-next-line @typescript-eslint/no-misused-promises
             const response = await request(app)
-                .delete(`/api/v1/web/manager/${id}`)
+                .put(`/api/v1/web/manager/${id}`)
                 .set('Cookie', [`accessToken=${adminToken}`])
-                .query({ role: 'manager' });
+                .send(managerData2);
 
             expect(response.statusCode).toBe(204);
         });
 
         it('should return the 401 status code', async () => {
             //Arrenge
+            const tenantData = {
+                name: 'Puri Store',
+                address: 'Puri, Odisha-752001',
+            };
+
+            //Action
+            // eslint-disable-next-line @typescript-eslint/no-misused-promises
+            const tenantResponse = await request(app)
+                .post('/api/v1/web/tenants')
+                .set('Cookie', [`accessToken=${adminToken}`])
+                .send(tenantData);
+
+            //Asserts
+            expect(tenantResponse.statusCode).toBe(201);
+
+            //Arrenge
+            const { id: tenantId } = tenantResponse.body as { id: number };
+
             const managerData = {
                 firstName: 'Jitendra',
                 lastName: 'Sahoo',
                 email: 'saho6oj168@gmail.com',
                 password: 'Jitu@135050',
                 role: 'manager',
-                tenantId: 1,
+                tenantId: tenantId,
             };
 
             //Action
@@ -111,23 +174,51 @@ describe('GET /manager/:id', () => {
 
             const { id } = newData.body as { id: number };
 
+            const managerData2 = {
+                firstName: 'Jitcccccccendra',
+                lastName: 'Sahcccccccoo',
+                email: 'sahocccccc6oj168@gmail.com',
+                password: 'Jitu@135050',
+                role: 'manager',
+                tenantId: tenantId,
+            };
+
             // eslint-disable-next-line @typescript-eslint/no-misused-promises
             const response = await request(app)
-                .delete(`/api/v1/web/manager/${id}`)
-                .query({ role: 'manager' });
+                .put(`/api/v1/web/manager/${id}`)
+                .send(managerData2);
 
             expect(response.statusCode).toBe(401);
         });
 
         it('should return the 403 status code', async () => {
             //Arrenge
+            //Arrenge
+            const tenantData = {
+                name: 'Puri Store',
+                address: 'Puri, Odisha-752001',
+            };
+
+            //Action
+            // eslint-disable-next-line @typescript-eslint/no-misused-promises
+            const tenantResponse = await request(app)
+                .post('/api/v1/web/tenants')
+                .set('Cookie', [`accessToken=${adminToken}`])
+                .send(tenantData);
+
+            //Asserts
+            expect(tenantResponse.statusCode).toBe(201);
+
+            //Arrenge
+            const { id: tenantId } = tenantResponse.body as { id: number };
+
             const managerData = {
                 firstName: 'Jitendra',
                 lastName: 'Sahoo',
                 email: 'saho6oj168@gmail.com',
                 password: 'Jitu@135050',
                 role: 'manager',
-                tenantId: 1,
+                tenantId: tenantId,
             };
 
             const customerToken = jwks.token({
@@ -144,42 +235,22 @@ describe('GET /manager/:id', () => {
 
             const { id } = newData.body as { id: number };
 
-            // eslint-disable-next-line @typescript-eslint/no-misused-promises
-            const response = await request(app)
-                .delete(`/api/v1/web/manager/${id}`)
-                .set('Cookie', [`accessToken=${customerToken}`])
-                .query({ role: 'manager' });
-
-            expect(response.statusCode).toBe(403);
-        });
-
-        it('should return the 400 status code', async () => {
-            //Arrenge
-            const managerData = {
-                firstName: 'Jitendra',
-                lastName: 'Sahoo',
-                email: 'saho6oj168@gmail.com',
+            const managerData2 = {
+                firstName: 'Jitcccccccendra',
+                lastName: 'Sahcccccccoo',
+                email: 'sahocccccc6oj168@gmail.com',
                 password: 'Jitu@135050',
                 role: 'manager',
-                tenantId: 1,
+                tenantId: tenantId,
             };
-
-            //Action
-            // eslint-disable-next-line @typescript-eslint/no-misused-promises
-            await request(app)
-                .post('/api/v1/web/manager')
-                .set('Cookie', [`accessToken=${adminToken}`])
-                .send(managerData);
-
-            const id = 'gh';
 
             // eslint-disable-next-line @typescript-eslint/no-misused-promises
             const response = await request(app)
-                .delete(`/api/v1/web/manager/${id}`)
-                .set('Cookie', [`accessToken=${adminToken}`])
-                .query({ role: 'manager' });
+                .put(`/api/v1/web/manager/${id}`)
+                .set('Cookie', [`accessToken=${customerToken}`])
+                .send(managerData2);
 
-            expect(response.statusCode).toBe(400);
+            expect(response.statusCode).toBe(403);
         });
     });
 });

@@ -34,27 +34,19 @@ describe('POST /manager', () => {
     describe('Happy Parts', () => {
         it('should return the 201 status code', async () => {
             //Arrenge
-            const userData = {
-                firstName: 'Jitendra',
-                lastName: 'Sahoo',
-                email: 'saho6oj168@gmail.com',
-                password: 'Jitu@135050',
-                role: 'manager',
-                tenantId: 1,
+            const tenantData = {
+                name: 'Puri Store',
+                address: 'Puri, Odisha-752001',
             };
 
             //Action
             // eslint-disable-next-line @typescript-eslint/no-misused-promises
-            const response = await request(app)
-                .post('/api/v1/web/manager')
+            const tenantResponse = await request(app)
+                .post('/api/v1/web/tenants')
                 .set('Cookie', [`accessToken=${adminToken}`])
-                .send(userData);
+                .send(tenantData);
 
-            //Asserts
-            expect(response.statusCode).toBe(201);
-        });
-
-        it('Should create a Manager in the Database', async () => {
+            const { id } = tenantResponse.body as { id: number };
             //Arrenge
             const userData = {
                 firstName: 'Jitendra',
@@ -62,7 +54,45 @@ describe('POST /manager', () => {
                 email: 'saho6oj168@gmail.com',
                 password: 'Jitu@135050',
                 role: 'manager',
-                tenantId: 1,
+                tenantId: id,
+            };
+
+            //Action
+            // eslint-disable-next-line @typescript-eslint/no-misused-promises
+            const managerResponse = await request(app)
+                .post('/api/v1/web/manager')
+                .set('Cookie', [`accessToken=${adminToken}`])
+                .send(userData);
+
+            //Asserts
+            expect(tenantResponse.statusCode).toBe(201);
+            expect(managerResponse.statusCode).toBe(201);
+        });
+
+        it('Should create a Manager in the Database', async () => {
+            //Arrenge
+            const tenantData = {
+                name: 'Puri Store',
+                address: 'Puri, Odisha-752001',
+            };
+
+            //Action
+            // eslint-disable-next-line @typescript-eslint/no-misused-promises
+            const tenantResponse = await request(app)
+                .post('/api/v1/web/tenants')
+                .set('Cookie', [`accessToken=${adminToken}`])
+                .send(tenantData);
+
+            const { id } = tenantResponse.body as { id: number };
+
+            //Arrenge
+            const userData = {
+                firstName: 'Jitendra',
+                lastName: 'Sahoo',
+                email: 'saho6oj168@gmail.com',
+                password: 'Jitu@135050',
+                role: 'manager',
+                tenantId: id,
             };
 
             //Action
@@ -73,7 +103,9 @@ describe('POST /manager', () => {
                 .send(userData);
 
             const userRepository = connection.getRepository(User);
-            const user = await userRepository.find();
+            const user = await userRepository.find({
+                relations: ['tenant'],
+            });
 
             //Asserts
             expect(user).toHaveLength(1);

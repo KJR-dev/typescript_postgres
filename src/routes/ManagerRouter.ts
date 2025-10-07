@@ -9,6 +9,7 @@ import {
     createManagerSchema,
     getAllManagerSchema,
     getByIdManagerSchema,
+    updateManagerSchema,
 } from '../validators/manager-validator';
 import { validateRequest } from '../middlewares/validateRequest';
 import { CreateUserRequest } from '../types/user';
@@ -62,6 +63,16 @@ managerRouter
         validateRequest(getByIdManagerSchema, 'params'),
         async (req: Request, res: Response, next: NextFunction) => {
             await userController.deleteById(req, res, next);
+        },
+    )
+    .put(
+        sanitizeXSSMiddleware,
+        authenticate,
+        canAccess([Roles.ADMIN]),
+        validateRequest(updateManagerSchema, 'body'),
+        validateRequest(getByIdManagerSchema, 'params'),
+        async (req: Request, res: Response, next: NextFunction) => {
+            await userController.updateById(req, res, next);
         },
     );
 
