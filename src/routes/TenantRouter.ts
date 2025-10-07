@@ -37,13 +37,9 @@ tenantRouter
             await tenantController.create(req, res, next);
         },
     )
-    .get(
-        authenticate,
-        canAccess([Roles.ADMIN]),
-        async (req: Request, res: Response, next: NextFunction) => {
-            await tenantController.getAll(req, res, next);
-        },
-    );
+    .get(async (req: Request, res: Response, next: NextFunction) => {
+        await tenantController.getAll(req, res, next);
+    });
 tenantRouter
     .route('/:id')
     .get(
