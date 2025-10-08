@@ -7,7 +7,7 @@ import { AppDataSource } from '../config/data-source';
 import { RefreshToken } from '../entity/RefreshToken';
 
 export default expressjwt({
-    secret: Config.REFRESH_TOKEN!,
+    secret: Config.REFRESH_TOKEN!, // here just check
     algorithms: ['HS256'],
     getToken(req: Request) {
         const { refreshToken } = req.cookies as AuthCookie;
