@@ -3,3 +3,7 @@ npm-debug.log
 .env.development
 .env.production
 .env.test
+dist
+coverage
+.git
+.env
