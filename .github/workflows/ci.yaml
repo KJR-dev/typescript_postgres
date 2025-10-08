@@ -20,7 +20,7 @@ jobs:
             - name: Run eslint
               run: npm run lint:check
             - name: Test and coverage
-              run: npm run test
+              run: npm test -- --detectOpenHandles --forceExit
               env:
                   POSTGRESQL_HOST: ${{secrets.TEST_DB_HOST}}
                   POSTGRESQL_PORT: ${{secrets.TEST_DB_PORT}}
