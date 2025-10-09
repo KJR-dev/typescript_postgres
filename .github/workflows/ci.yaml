@@ -43,7 +43,7 @@ jobs:
         needs: build-and-test
         runs-on: ubuntu-latest
         env:
-            IMAGE_NAME: mernstack-auth-service
+            IMAGE_NAME: jitendra000/mernstack-auth-service
             IMAGE_TAG: build-${{ github.run_number }}
         if: github.ref == 'refs/heads/master' && github.event_name == 'push'
         steps:
