@@ -119,3 +119,5 @@ db.log_entries.getIndexes()
 db.log_entries.dropIndex("timestamp_1")
 db.log_entries.createIndex({ "timestamp": 1 }, { expireAfterSeconds: 60 })
 mongosh -u root -p root --authenticationDatabase admin
+
+just edit
